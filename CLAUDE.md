@@ -396,7 +396,7 @@ Uitrollen gebeurt **niet vanuit deze repo**, maar in de `manor`-repo
 op welke host spellenhoek draait. Kijk het daar elke keer na en zet hier geen
 host of commando neer: dat veroudert. De host is al eens gewisseld (van keeper
 naar porter, 2026-09-25). Wat wél vastligt: manor bouwt uit
-`tmisker/gamehoekje#main`, dus een wijziging gaat pas live na een merge naar
+`iTim-Technology/gamehoekje#main`, dus een wijziging gaat pas live na een merge naar
 `main` én een rebuild via manor.
 
 ## Valkuilen (echt gebeurd)
