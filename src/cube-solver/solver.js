@@ -6,6 +6,9 @@
 // ============================================================================
 
 // --- basic face moves at cubie level (clockwise quarter turns) -------------
+// Elke zet moet een ECHTE vlakdraaiing zijn: test/solver.test.js legt ze naast
+// een meetkundig model van de stickers. (De D-randen draaiden eerst de andere
+// kant op dan de D-hoeken; intern klopte alles, op een echte kubus niet.)
 const MOVES = {
   U: { cp:[3,0,1,2,4,5,6,7], co:[0,0,0,0,0,0,0,0],
        ep:[3,0,1,2,4,5,6,7,8,9,10,11], eo:[0,0,0,0,0,0,0,0,0,0,0,0] },
@@ -14,7 +17,7 @@ const MOVES = {
   F: { cp:[1,5,2,3,0,4,6,7], co:[1,2,0,0,2,1,0,0],
        ep:[0,9,2,3,4,8,6,7,1,5,10,11], eo:[0,1,0,0,0,1,0,0,1,1,0,0] },
   D: { cp:[0,1,2,3,5,6,7,4], co:[0,0,0,0,0,0,0,0],
-       ep:[0,1,2,3,7,4,5,6,8,9,10,11], eo:[0,0,0,0,0,0,0,0,0,0,0,0] },
+       ep:[0,1,2,3,5,6,7,4,8,9,10,11], eo:[0,0,0,0,0,0,0,0,0,0,0,0] },
   L: { cp:[0,2,6,3,4,1,5,7], co:[0,1,2,0,0,2,1,0],
        ep:[0,1,10,3,4,5,9,7,8,2,6,11], eo:[0,0,0,0,0,0,0,0,0,0,0,0] },
   B: { cp:[0,1,3,7,4,5,2,6], co:[0,0,1,2,0,0,2,1],
