@@ -417,6 +417,13 @@ naar porter, 2026-09-25). Wat wél vastligt: manor bouwt uit
 - **Wie "nu aan tafel" is** (`upNow`) is greedy: de eerste speelbare wedstrijden
   in schema-volgorde waarvan geen speler al bezig is, één per tafel. Dat wijkt
   bewust af van de strikte rondevolgorde zodra een tafel eerder klaar is.
+- **`isSolved` bewijst niet dat een zet echt bestaat.** In `MOVES.D` draaiden
+  de randen tegen de klok in en de hoeken met de klok mee. Duizenden scrambles
+  losten intern keurig op, maar op een echte kubus ging elke `D`/`D'` mis (`D2`
+  toevallig niet), en de animatie draaide de verkeerde kant op. Gevonden op
+  2026-11-20 met een echte kubus in de hand. `test/solver.test.js` legt nu alle
+  18 zetten naast een los meetkundig stickermodel en controleert dat
+  `MOVE_ANIM` in `app.js` precies die zetten laat zien.
 - **Slice-coördinaat:** voor de opgeloste kubus is `getSlice` = **494** (niet 0),
   want de comb-index van posities {8,9,10,11} is de hoogste. De pruning-BFS start
   daarom op `SLICE_SOLVED`, en de fase-1 goal checkt `slice === SLICE_SOLVED`.

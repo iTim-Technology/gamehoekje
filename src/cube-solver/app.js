@@ -37,13 +37,15 @@
 
 
   // Per-move animation: which layer rotates and around which CSS axis/angle.
-  // Coordinates are CSS (x right, y DOWN, z toward viewer). Derived so the
-  // animation reproduces the solver's MOVES permutation exactly.
+  // Coordinates are CSS (x right, y DOWN, z toward viewer). The animation must
+  // reproduce the solver's MOVES permutation exactly; test/solver.test.js
+  // checks that for all 18 moves. U and D turn opposite ways around the same
+  // axis (each is clockwise seen from its own side), as do R/L and F/B.
   //   sel(x,y,z) -> true if a cubie is in the turning layer
   //   axis: "X"|"Y"|"Z" ; deg: base clockwise angle for the plain move
   const MOVE_ANIM = {
     U:{sel:(x,y,z)=>y===-1, axis:"Y", deg:-90},
-    D:{sel:(x,y,z)=>y=== 1, axis:"Y", deg:-90},
+    D:{sel:(x,y,z)=>y=== 1, axis:"Y", deg: 90},
     R:{sel:(x,y,z)=>x=== 1, axis:"X", deg: 90},
     L:{sel:(x,y,z)=>x===-1, axis:"X", deg:-90},
     F:{sel:(x,y,z)=>z=== 1, axis:"Z", deg: 90},
