@@ -19,6 +19,9 @@ UI-teksten zijn in het **Nederlands**. Houd dat zo.
 
 ```
 index.html                     # homepage: overzicht met een kaartje per spel
+favicon.svg  favicon.ico       # icoon van de site (GEBOUWD door tools/favicon.js)
+apple-touch-icon.png           #   idem, voor een app op het beginscherm (iOS)
+tools/favicon.js               # tekent die drie bestanden (vier tegels), zonder dependencies
 spelers/index.html             # beheer: dubbele voornamen + oude potjes toewijzen
 server/
   server.js                    # statische site + /api/{boerenbridge,klaverjas,tafeltennis,yahtzee,spelers}/* + SSE
@@ -476,6 +479,22 @@ naar porter, 2026-09-25). Wat wél vastligt: manor bouwt uit
   trager). Zie de `buildTables`-aanpak in `kociemba.js`.
 - **`node_modules/`** staat in `.gitignore` (alleen `jsdom` voor tests). Niet committen.
 
+## Icoon (elke pagina)
+
+Direct onder de `apple-mobile-web-app-title`-meta staan drie regels:
+`<link rel="icon">` naar `favicon.ico` (32×32) en `favicon.svg`, en
+`<link rel="apple-touch-icon">` naar `apple-touch-icon.png`. Het pad is
+**relatief** (`../../favicon.svg` vanuit `games/<spel>/`, `../../../` vanuit een
+`display/` of `stats/`), zodat losse pagina's zonder server blijven werken. De
+cube-solver krijgt ze via `template.html`.
+
+Het icoon (vier tegels op het donkere vlak) staat op één plek: `tools/favicon.js`.
+Wijzigen = daar aanpassen en `node tools/favicon.js` draaien; dat schrijft alle
+drie de bestanden opnieuw (zelfde invoer, byte voor byte dezelfde uitvoer).
+Het beginschermicoon heeft bewust geen ronde hoeken: iOS rondt zelf af en vult
+doorzichtige hoeken met zwart. Wie de site al op het beginscherm had, ziet het
+nieuwe icoon pas na opnieuw toevoegen.
+
 ## Geen zoom (elke pagina)
 
 Onderaan elke pagina staat, vlak voor `</body>`, een identiek blokje
@@ -553,7 +572,8 @@ browsers willen een gebruikersactie).
 - Nederlands in de UI; commit-berichten mogen Nederlands of Engels.
 - Self-contained pagina's, geen externe requests of CDN's. Requests naar de
   eigen server (relatieve `/api/...`-paden) zijn de enige uitzondering.
-- Nieuwe pagina? Neem het wakker- en het zoom-blokje van hierboven over.
+- Nieuwe pagina? Neem de icoon-regels (met het juiste relatieve pad) en het
+  wakker- en het zoom-blokje van hierboven over.
 - Mobiel-eerst, donker thema. Homepage-accent `#5b8cff`; spel-accent groen.
 - Geen auth: bedoeld voor een vertrouwd thuisnetwerk (staat ook in README).
 - Commit & push alleen wanneer de gebruiker erom vraagt; ontwikkel op de

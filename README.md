@@ -350,6 +350,7 @@ src/
   cube-solver/                 # bron van de solver-pagina
     template.html  solver.js  kociemba.js  pocket.js  app.js
 build.js                       # bouwt de cube-solver naar games/cube-solver/
+tools/favicon.js               # tekent favicon.svg/.ico en apple-touch-icon.png
 test/api.test.js               # end-to-end API-test (boerenbridge)
 test/klaverjas.test.js         # end-to-end API-test (klaverjas)
 test/tafeltennis.test.js       # end-to-end API-test (tafeltennis)
