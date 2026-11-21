@@ -9,7 +9,7 @@ offline als losse pagina's.
 
 | Spel | Map | Wat |
 |------|-----|-----|
-| 🧩 **Kubus Solver** | `games/cube-solver/` | Kleur je Rubik's kubus in en los hem in ±20 zetten op (Kociemba two-phase), stap voor stap. |
+| 🧩 **Kubus Solver** | `games/cube-solver/` | Kleur je Rubik's kubus in en los hem stap voor stap op: de 3×3 in ±20 zetten (Kociemba two-phase), de 2×2 in de kortste route (hooguit 11 zetten). Of leer het zelf, fase voor fase. |
 | 🧇 **Wafelwoorden** | `games/wafelwoorden/` | Sleep de letters op hun plek en los de woordwafel op. |
 | 🃏 **Boerenbridge** | `games/boerenbridge/` | Score bijhouden met twee apparaten: invoer op je telefoon, live scorebord op een tweede scherm. Met klassement over alle potjes. |
 | 🂡 **Klaverjas** | `games/klaverjas/` | Een boompje van 16 rondes met twee teams: troef, punten, roem, nat en pit. Met live scorebord op een tweede scherm en klassement. |
@@ -319,9 +319,9 @@ via `N_VISION`). Dat test het rekenwerk, niet een echte camera.
 `spelers.test.js` test de dubbele voornamen: de vraag bij de start, de
 voornaam aan tafel, de suggesties en het toewijzen van oude potjes, voor alle
 vier de spellen.
-`solver.test.js` lost honderden willekeurige scrambles op met beide
-oplossers en verifieert elke oplossing (aantallen instelbaar via
-`N_KOCIEMBA` / `N_LBL`).
+`solver.test.js` lost honderden willekeurige scrambles op met alle
+oplossers (3×3 en 2×2) en verifieert elke oplossing (aantallen instelbaar via
+`N_KOCIEMBA` / `N_LBL` / `N_STAGED` / `N_POCKET`).
 
 ## Structuur
 
@@ -348,7 +348,7 @@ games/
   wafelwoorden/index.html      # woordspel
 src/
   cube-solver/                 # bron van de solver-pagina
-    template.html  solver.js  kociemba.js  app.js
+    template.html  solver.js  kociemba.js  pocket.js  app.js
 build.js                       # bouwt de cube-solver naar games/cube-solver/
 test/api.test.js               # end-to-end API-test (boerenbridge)
 test/klaverjas.test.js         # end-to-end API-test (klaverjas)
@@ -375,6 +375,8 @@ node build.js   # src/cube-solver/*  ->  games/cube-solver/index.html
 
 - `solver.js` – kubusmodel, facelet-conversie + laag-voor-laag fallback
 - `kociemba.js` – Kociemba two-phase oplosser (±20 zetten, ~0,8 s tabel-build)
+- `pocket.js` – de 2×2: model, kortste oplossing via een afstandstabel van
+  alle 3,67 miljoen standen (~0,15 s), en de leer-route
 - `app.js` – de mobiele UI (draait de solver in een Web Worker)
 - `template.html` – HTML + styling
 

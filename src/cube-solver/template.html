@@ -17,6 +17,7 @@
       --cs:min(42vw,190px);           /* cube size */
       --cu:calc(var(--cs)/3);         /* cubie size */
     }
+    body.n2{--cu:calc(var(--cs)/2);}  /* 2×2: zelfde kubus, grotere blokjes */
     html,body{height:100%;}
     body{
       background:var(--bg); color:var(--text);
@@ -33,7 +34,13 @@
       border:1px solid var(--line); border-radius:14px; padding:12px;
     }
 
-    /* ── 3D cube (27 cubies) ── */
+    /* ── maat-schakelaar (3×3 / 2×2) ── */
+    .sizeseg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:3px;margin-top:-4px;}
+    .sizeseg button{background:transparent;color:var(--muted);border-radius:8px;padding:7px 18px;font-size:.9rem;}
+    .sizeseg button.active{background:var(--accent);color:#fff;}
+    .sizeseg button:active{transform:none;}
+
+    /* ── 3D cube (N×N×N cubies) ── */
     .scene{
       width:100%; max-width:460px; height:calc(var(--cs)*1.55);
       perspective:1300px; margin:18px auto 12px;
@@ -169,6 +176,11 @@
     <p>Kleur je kubus in en los hem stap voor stap op</p>
   </header>
 
+  <div class="sizeseg" id="sizeSeg" role="group" aria-label="Maat van de kubus">
+    <button data-n="3" class="active">3×3</button>
+    <button data-n="2">2×2</button>
+  </div>
+
   <div class="scene"><div class="tilt"><div id="cube" class="cube"></div></div></div>
 
   <div class="viewctrl">
@@ -179,7 +191,7 @@
   <div id="status"></div>
 
   <div id="paletteWrap" class="card">
-    <div class="hint">Draai de kubus met de knoppen, kies een kleur en tik op de vlakjes. De middens staan vast.</div>
+    <div class="hint" id="paletteHint">Draai de kubus met de knoppen, kies een kleur en tik op de vlakjes. De middens staan vast.</div>
     <div id="palette"></div>
   </div>
 
@@ -212,10 +224,11 @@
     </div>
   </div>
 
-  <footer>Werkt volledig offline · Snel oplossen (±20 zetten) of stap voor stap de trucjes leren</footer>
+  <footer>Werkt volledig offline · 3×3 in ±20 zetten, 2×2 in de kortste route · of stap voor stap de trucjes leren</footer>
 
   <script id="solver-src">/*__SOLVER__*/</script>
   <script id="kociemba-src">/*__KOCIEMBA__*/</script>
+  <script id="pocket-src">/*__POCKET__*/</script>
   <script>/*__APP__*/</script>
   <!-- Scherm wakker. Zelfde blok op elke pagina; zie CLAUDE.md. -->
   <style>
