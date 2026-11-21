@@ -1,5 +1,5 @@
 // Assemble the self-contained cube-solver page from its parts.
-//   src/cube-solver/{template,solver,kociemba,app}  ->  games/cube-solver/index.html
+//   src/cube-solver/{template,solver,kociemba,pocket,app}  ->  games/cube-solver/index.html
 const fs = require("fs");
 const path = require("path");
 
@@ -11,6 +11,7 @@ const tpl = read("template.html");
 const out = tpl
   .replace("/*__SOLVER__*/",   "\n" + read("solver.js")   + "\n")
   .replace("/*__KOCIEMBA__*/", "\n" + read("kociemba.js") + "\n")
+  .replace("/*__POCKET__*/",   "\n" + read("pocket.js")   + "\n")
   .replace("/*__APP__*/",      "\n" + read("app.js")      + "\n");
 
 fs.mkdirSync(path.dirname(OUT), { recursive: true });

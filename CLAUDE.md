@@ -46,6 +46,7 @@ src/
     template.html              #   HTML + CSS, met /*__SOLVER__*/ etc. placeholders
     solver.js                  #   kubusmodel + facelet-conversie + LBL-fallback
     kociemba.js                #   Kociemba two-phase oplosser (±20 zetten)
+    pocket.js                  #   2×2: model + kortste oplossing + leer-route
     app.js                     #   mobiele UI-logica (Web Worker)
 build.js                       # bouwt src/cube-solver/* -> games/cube-solver/index.html
 test/api.test.js               # end-to-end test van server + boerenbridge-API
@@ -55,7 +56,7 @@ test/tafeltennis.test.js       # end-to-end test van het tafeltennis-API
 test/yahtzee.test.js           # end-to-end test van het yahtzee-API
 test/yahtzee-vision.test.js    # dobbelsteenherkenning op synthetische beelden (puur)
 test/spelers.test.js           # dubbele voornamen: pure functies + end-to-end over alle spellen
-test/solver.test.js            # cube-solver op honderden scrambles (node test/solver.test.js)
+test/solver.test.js            # cube-solver (3×3 én 2×2) op honderden scrambles
 data/                          # spelgegevens (gitignored; Docker-volume)
 README.md                      # gebruikersgerichte uitleg
 docs/ideeen-statistieken.md    # ideeënlijst statistieken & display-weetjes (boerenbridge), nog te bouwen
@@ -308,8 +309,9 @@ node build.js
 ```
 
 `build.js` leest `template.html` en vervangt de placeholders
-`/*__SOLVER__*/`, `/*__KOCIEMBA__*/`, `/*__APP__*/` door de inhoud van
-`solver.js`, `kociemba.js` en `app.js` (elk in een eigen `<script>`).
+`/*__SOLVER__*/`, `/*__KOCIEMBA__*/`, `/*__POCKET__*/`, `/*__APP__*/` door de
+inhoud van `solver.js`, `kociemba.js`, `pocket.js` en `app.js` (elk in een
+eigen `<script>`).
 
 > **Belangrijk:** bewerk nooit `games/cube-solver/index.html` direct — die wordt
 > overschreven. Wijzig de bestanden in `src/cube-solver/` en draai `node build.js`.
@@ -337,9 +339,39 @@ Twee oplossers:
    BFS-tabel (62 208 toestanden). Langer (~90 zetten) maar simpel.
 
 De UI (`app.js`) draait de solve in een **Web Worker** (gebouwd uit de
-ingebedde `<script id="solver-src">` + `<script id="kociemba-src">` via een
-Blob). Bij geen Worker valt hij terug op de main thread. Worker → Kociemba,
-en als die `null` geeft → `solveCube`.
+ingebedde `<script id="solver-src">` + `<script id="kociemba-src">` +
+`<script id="pocket-src">` via een Blob, met `workerMain` erachter). Bij geen
+Worker valt hij terug op de main thread. Worker → Kociemba, en als die `null`
+geeft → `solveCube`.
+
+### De 2×2 (`pocket.js`)
+
+Dezelfde pagina, met een schakelaar 3×3 / 2×2 (keuze in `localStorage`
+`spellenhoek:kubus-maat`; `#2x2` in het adres opent direct de 2×2). Alles wat
+per maat verschilt staat in `SIZES` in `app.js`; de 3D-kubus, animatie en
+leer-modus zijn gedeeld. Blokjes staan gecentreerd (−1/0/1 bij de 3×3,
+±½ bij de 2×2), dus `MOVE_ANIM` selecteert een laag op het teken van de
+coördinaat en `faceletCubie(key, r, c, n)` werkt voor beide maten.
+
+- **Alleen hoeken**, zelfde nummering/oriëntatie als de 3×3. Facelets
+  U=0..3 R=4..7 F=8..11 D=12..15 L=16..19 B=20..23 (per vlak `0 1 / 2 3`).
+- **De hoek DBL (linksachter onder) beweegt nooit**: de oplosser draait
+  alleen U, R en F. Een 2×2 heeft geen middens, dus die hoek legt vast hoe de
+  kubus in je hand ligt; en U/R/F zijn precies de vlakken op het scherm.
+- **Welke kleur bij welk vlak hoort** volgt uit die hoek; welke kleuren
+  tegenover elkaar liggen uit de hoeken zelf (twee kleuren die nooit samen op
+  een hoek zitten). `faceletsToState` geeft daarom `{state, faceColor}` en
+  `stateToFacelets(state, faceColor)` geeft precies de invoer terug (frame 0).
+  Werkt dus hoe je de kubus ook vasthoudt, en met elk kleurenschema.
+- **Kortste oplossing:** breedte-eerst over alle 5040 × 729 = 3 674 160 standen
+  (één byte per stand, ~0,15 s), daarna steeds de zet die de afstand met één
+  verlaagt. Hooguit 11 zetten. De test controleert de bekende verdeling
+  (1, 9, 54, …, 2644) — dat bewijst dat de tabel de hele kubus dekt.
+- **Leer-route** (`solveStaged`): onderlaag hoek voor hoek (kortste per hoek),
+  bovenvlak met Sune/anti-Sune, hoeken bovenlaag met T-perm (ruilt de twee
+  rechter hoeken) en Y-perm (schuin). De uitleg in `STAGE_INFO_2` zegt dat
+  ook; de test legt het vast. `{boven}`/`{onder}` in die teksten worden de
+  kleurnamen van de ingevoerde kubus.
 
 ## Testen (doe dit, er is geen CI)
 
@@ -382,7 +414,11 @@ console.log(S.isSolved(S.applySeq(S.clone(s), sol)), sol.length);
 
 Verifieer altijd door duizenden willekeurige scrambles op te lossen en
 `isSolved` te checken — niet door een paar voorbeelden te bekijken.
-`node test/solver.test.js` doet precies dat (aantallen via `N_KOCIEMBA`/`N_LBL`).
+`node test/solver.test.js` doet precies dat (aantallen via `N_KOCIEMBA`/`N_LBL`/
+`N_STAGED`/`N_POCKET`; het hele bestand duurt ~3,5 min door Kociemba, met
+`N_KOCIEMBA=2 N_LBL=2 N_STAGED=2` een paar seconden). Voor de 2×2 legt hij de
+zetten naast een eigen stickermodel, draait hij de ingevoerde kubus willekeurig
+in je hand en met andere kleuren, en lost hij die op stickerniveau op.
 
 UI end-to-end: `jsdom` is beschikbaar (`npm install jsdom --no-save`). Laad het
 **gebouwde** `games/cube-solver/index.html` met `runScripts:"dangerously"`. In
@@ -430,6 +466,11 @@ naar porter, 2026-09-25). Wat wél vastligt: manor bouwt uit
 - **Worker scope:** in de Worker bestaat `window` niet. `solver.js` zet
   `CubeSolver` als top-level `const`; `kociemba.js` pakt die via de gedeelde
   lexicale scope (solver-script staat eerst in de Blob). Verbreek die volgorde niet.
+  `pocket.js` zit helemaal in een IIFE en zet alleen `Pocket`: in de Blob
+  (en in de gedeelde globale scope van de pagina) zou een tweede top-level
+  `MOVES`/`clone` een SyntaxError geven. `workerMain` in `app.js` wordt als
+  tekst (`toString()`) achter de scripts gezet en mag dus niets uit de
+  closure van `app.js` gebruiken.
 - **Tabellen snel bouwen:** bouw move-tabellen met lichte array-rekenkunde op de
   coördinaatvectoren, NIET met `clone()` + `applyMove()` per entry (dat was ~50×
   trager). Zie de `buildTables`-aanpak in `kociemba.js`.
