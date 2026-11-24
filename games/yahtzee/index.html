@@ -1203,7 +1203,8 @@ if (typeof module !== 'undefined') module.exports = DiceVision;
     renderSheet();
     renderUndo();
     renderWinner();
-    $('#abandonBtn').textContent = active ? 'Potje afbreken' : 'Naar overzicht';
+    // Na afloop valt er niets meer af te breken; terug kan via de knop ernaast.
+    $('#abandonBtn').style.display = active ? '' : 'none';
     if(picking) renderPicker();
     fxCheck();
   }
@@ -1670,7 +1671,6 @@ if (typeof module !== 'undefined') module.exports = DiceVision;
   // ---- knoppen onder het spel ----
   $('#backToStartBtn').addEventListener('click',showStart);
   $('#abandonBtn').addEventListener('click',()=>{
-    if(game && game.status!=='active'){ showStart(); return; }
     if(!confirm('Dit potje afbreken? Het telt dan niet mee voor het klassement en de highscores.')) return;
     attempt(async()=>{
       await api('POST','/games/'+game.id+'/abandon');

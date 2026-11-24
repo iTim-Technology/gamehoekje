@@ -712,6 +712,7 @@
     $('#gameConn').style.display='none';
     renderScoreTable();
     renderSwap();
+    $('#abandonBtn').style.display = game.status==='active' ? '' : 'none';
     if(game.status!=='active'){
       $('#roundSuit').textContent='';
       $('#roundInfo').textContent = game.status==='finished' ? '' : 'Spel afgebroken';
@@ -1056,7 +1057,6 @@
   // ---- knoppen onder het spel ----
   $('#backToStartBtn').addEventListener('click',showStart);
   $('#abandonBtn').addEventListener('click',()=>{
-    if(game && game.status!=='active'){ showStart(); return; }
     if(!confirm('Dit spel afbreken? Het telt dan niet mee voor het klassement.')) return;
     attempt(async()=>{
       await api('POST','/games/'+game.id+'/abandon');

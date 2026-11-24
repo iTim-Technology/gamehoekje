@@ -528,6 +528,7 @@
       ? '<div class="notice'+(notice.bad?' bad':'')+'">'+esc(notice.text)+'</div>' : '';
     renderTotals();
     renderScoreTable();
+    $('#abandonBtn').style.display = game.status==='active' ? '' : 'none';
 
     if(game.status!=='active'){
       $('#roundStep').textContent = game.status==='finished' ? 'Potje afgelopen!' : 'Potje afgebroken';
@@ -840,7 +841,6 @@
   // ---- knoppen onder het spel ----
   $('#backToStartBtn').addEventListener('click',showStart);
   $('#abandonBtn').addEventListener('click',()=>{
-    if(game && game.status!=='active'){ showStart(); return; }
     if(!confirm('Dit potje afbreken? Het telt dan niet mee voor het klassement.')) return;
     attempt(async()=>{
       await api('POST','/games/'+game.id+'/abandon');
